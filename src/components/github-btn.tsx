@@ -1,4 +1,8 @@
-import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  GithubAuthProvider,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { auth } from "../firebase";
@@ -30,6 +34,12 @@ export default function GithubButton() {
       const provider = new GithubAuthProvider();
       // signInWithRedirect 도 있음
       await signInWithPopup(auth, provider);
+
+      //   const user = auth.currentUser;
+
+      //   await updateProfile(user, {
+      //     displayName: name,
+      //   });
       navigate("/");
     } catch (error) {
       console.error(1212, error);
