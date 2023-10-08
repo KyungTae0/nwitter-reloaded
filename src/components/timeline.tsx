@@ -5,10 +5,11 @@ import {
   onSnapshot,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import Tweet from "./tweet";
 
 export interface ITweet {
@@ -27,12 +28,14 @@ const Wrapper = styled.div`
 `;
 
 export default function Timeline() {
+  const user = auth.currentUser;
   const [tweets, setTweet] = useState<ITweet[]>([]);
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
     const fetchTweets = async () => {
       const tweetsQuery = query(
         collection(db, "tweets"),
+        where("userId", "==", user?.uid),
         orderBy("createdAt", "desc"),
         limit(25)
       );

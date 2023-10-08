@@ -1,12 +1,6 @@
 import { styled } from "styled-components";
 import { ITweet } from "./timeline";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import {
   ref,
   deleteObject,
@@ -14,12 +8,8 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { auth, db, storage } from "../firebase";
-import { useEffect, useState } from "react";
-import {
-  AttachFileButton,
-  AttachFileInput,
-  AttachFileLabel,
-} from "./post-tweet-form";
+import { useState } from "react";
+import { AttachFileInput, AttachFileLabel } from "./post-tweet-form";
 
 const Wrapper = styled.div`
   display: grid;
