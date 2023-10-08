@@ -86,7 +86,6 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
   const user = auth.currentUser;
   const [isEdditing, setIsEdditing] = useState(false);
   const [tweets, setTweets] = useState("");
-  const [file, setFile] = useState<File | null>(null);
 
   // 파일 변경
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,42 +94,34 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
       if (files[0].size > 1000000) {
         return;
       }
-      setFile(files[0]);
-    }
-  };
+      const file = files[0];
+      if (file) {
+        const ok = confirm("Are you sure you want to update photo this tweet?");
+        if (!ok) {
+          return false;
+        }
+        // 저장할 파일 위치 주소 생성
+        const locationRef = ref(storage, `tweets/${user?.uid}/${id}`);
 
-  // 파일 업로드 및 파일 url 업데이트
-  const updatePhoto = async () => {
-    if (file) {
-      const ok = confirm("Are you sure you want to update photo this tweet?");
-      if (!ok) {
-        return false;
+        // 바이트로 변환 후 스토리지에 파일 업로드
+        const result = await uploadBytes(locationRef, file);
+        // 업로드한 파일 주소 반환
+        const url = await getDownloadURL(result.ref);
+
+        // 새로운 파일 주소로 tweet photo 주소 업데이트
+        await updateDoc(doc(db, "tweets", id), {
+          photo: url,
+        });
+
+        // 기존 파일 주소
+        const photoRef = ref(storage, `tweets/${user?.uid}/${id}`);
+        // 기존 파일 삭제
+        await deleteObject(photoRef);
+
+        alert("complete upload file");
       }
-      // 저장할 파일 위치 주소 생성
-      const locationRef = ref(storage, `tweets/${user?.uid}/${id}`);
-
-      // 바이트로 변환 후 스토리지에 파일 업로드
-      const result = await uploadBytes(locationRef, file);
-      // 업로드한 파일 주소 반환
-      const url = await getDownloadURL(result.ref);
-
-      // 새로운 파일 주소로 tweet photo 주소 업데이트
-      await updateDoc(doc(db, "tweets", id), {
-        photo: url,
-      });
-
-      // 기존 파일 주소
-      const photoRef = ref(storage, `tweets/${user?.uid}/${id}`);
-      // 기존 파일 삭제
-      await deleteObject(photoRef);
-
-      alert("complete upload file");
     }
   };
-
-  useEffect(() => {
-    updatePhoto();
-  }, [file]);
 
   // 글 + 사진 삭제
   const onDelete = async () => {
