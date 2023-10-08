@@ -1,8 +1,4 @@
-import {
-  GithubAuthProvider,
-  signInWithPopup,
-  updateProfile,
-} from "firebase/auth";
+import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { auth } from "../firebase";
