@@ -30,7 +30,7 @@ const TextArea = styled.textarea`
   }
 `;
 
-const AttachFileButton = styled.label`
+export const AttachFileButton = styled.label`
   padding: 10px 0px;
   color: #1d9bf0;
   text-align: center;
@@ -41,7 +41,16 @@ const AttachFileButton = styled.label`
   cursor: pointer;
 `;
 
-const AttachFileInput = styled.input`
+export const AttachFileLabel = styled.label`
+  padding: 10px 0px;
+  color: #1d9bf0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+`;
+
+export const AttachFileInput = styled.input`
   display: none;
 `;
 
@@ -67,6 +76,8 @@ export default function PostTweetForm() {
     setTweet(e.target.value);
   };
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("왜 너한테 감?");
+
     const { files } = e.target;
     if (files && files.length === 1) {
       if (files[0].size > 1000000) {
@@ -85,24 +96,19 @@ export default function PostTweetForm() {
 
     try {
       setLoading(true);
-      console.log("user", user);
-      console.log("displayname", user.displayName);
 
       const doc = await addDoc(collection(db, "tweets"), {
         tweet,
-        createAt: Date.now(),
+        createdAt: Date.now(),
         username: user.displayName || "익명",
         userId: user.uid,
       });
 
       if (file) {
-        const locationRef = ref(
-          storage,
-          `tweets/${user.uid}-${user.displayName}/${doc.id}`
-        );
+        const locationRef = ref(storage, `tweets/${user.uid}/${doc.id}`);
+
         const result = await uploadBytes(locationRef, file);
         const url = await getDownloadURL(result.ref);
-        console.log("url", url);
 
         await updateDoc(doc, {
           photo: url,
